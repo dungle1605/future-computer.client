@@ -5,9 +5,12 @@ import { Link } from "react-router-dom";
 import "./Login.css";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import Cookies from "universal-cookie";
+import jwt from "jwt-decode";
 
 function Login() {
   const navigate = useNavigate();
+  const cookies = new Cookies();
   const { REACT_APP_API_ENDPOINT } = process.env;
   const displayTime = 3000;
   const [username, setUsername] = useState("");
@@ -20,7 +23,19 @@ function Login() {
 
     return axios
       .post(`${REACT_APP_API_ENDPOINT}/api/user/login`, command)
-      .then((res) => {});
+      .then((res) => {
+        const decoded = jwt(res.data);
+        cookies.set("jwt_authorization", res.data, {
+          expires: new Date(decoded.exp * 100),
+        });
+
+        toast.success("Login successful! Navigating to Home page...");
+
+        setTimeout(() => {
+          navigate("/");
+        }, displayTime);
+      })
+      .catch((err) => toast.error(err.message));
   };
 
   return (
@@ -44,7 +59,7 @@ function Login() {
             type="text"
             placeholder="Enter Your Username"
             required
-            onChange={(e) => setUsername(e)}
+            onChange={(e) => setUsername(e.target.value)}
             value={username}
           />
           <div className="underline"></div>
@@ -54,7 +69,7 @@ function Login() {
             type="password"
             placeholder="Enter Your Password"
             required
-            onChange={(e) => setPassword(e)}
+            onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
           <div className="underline"></div>
