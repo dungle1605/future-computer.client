@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 function MonthCategories() {
-  const [monthCate, SetMonthCate] = useState([]);
+  const [monthCate, setMonthCate] = useState([]);
   const { REACT_APP_API_ENDPOINT } = process.env;
 
   useEffect(() => {
     axios
       .get(`${REACT_APP_API_ENDPOINT}/api/categories/categories-of-the-month`)
       .then((res) => {
-        SetMonthCate(res.data);
+        setMonthCate(res.data);
       });
   }, []);
 
